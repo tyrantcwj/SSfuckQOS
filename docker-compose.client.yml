@@ -1,0 +1,30 @@
+# Remote / laptop side
+services:
+  ss-client:
+    image: ghcr.io/tyrantcwj/ssfuckqos-client:latest
+    build:
+      context: ./client
+    container_name: ssfuckqos-client
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      REMOTE_SERVER: "${REMOTE_SERVER}"
+      REMOTE_PORT: "${REMOTE_PORT:-80}"
+      SS_PASSWORD: "${SS_PASSWORD}"
+      SS_METHOD: "${SS_METHOD:-chacha20-ietf-poly1305}"
+      SS_TIMEOUT: "${SS_TIMEOUT:-300}"
+      V2RAY_PATH: "${V2RAY_PATH:-/nas-sync}"
+      V2RAY_HOST: "${V2RAY_HOST}"
+      LAN_CIDRS: "${LAN_CIDRS:-10.0.0.0/16}"
+      LOCAL_SOCKS_PORT: "${LOCAL_SOCKS_PORT:-1080}"
+      LOCAL_HTTP_PORT: "${LOCAL_HTTP_PORT:-8118}"
+      TZ: Asia/Shanghai
+    ports:
+      - "${LOCAL_SOCKS_PORT:-1080}:${LOCAL_SOCKS_PORT:-1080}/tcp"
+      - "${LOCAL_HTTP_PORT:-8118}:${LOCAL_HTTP_PORT:-8118}/tcp"
+    volumes:
+      - ss-client-data:/data
+
+volumes:
+  ss-client-data:

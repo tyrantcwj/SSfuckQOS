@@ -1,0 +1,8 @@
+.env
+*.env.local
+server/config.json
+client/config.json
+data/
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SSfuckQOS · 控制台</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="top">
+    <div>
+      <p class="brand">SSfuckQOS</p>
+      <h1>服务端控制台</h1>
+    </div>
+    <div class="top-actions">
+      <span id="status-pill" class="pill {{ 'on' if running else 'off' }}">
+        {{ '运行中' if running else '已停止' }}{% if pid %} · pid {{ pid }}{% endif %}
+      </span>
+      <a class="ghost" href="{{ url_for('logout') }}">退出</a>
+    </div>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <section class="grid">
+    <article class="panel">
+      <h2>通道状态</h2>
+      <dl class="kv">
+        <div><dt>监听</dt><dd class="mono">{{ data.SERVER_BIND }}:{{ data.SERVER_PORT }}</dd></div>
+        <div><dt>插件路径</dt><dd class="mono">{{ data.V2RAY_PATH }}</dd></div>
+        <div><dt>加密</dt><dd class="mono">{{ data.SS_METHOD }}</dd></div>
+        <div><dt>家庭网段</dt><dd class="mono">{{ data.LAN_CIDRS }}</dd></div>
+        <div><dt>管理面板运行</dt><dd>{{ uptime }}s</dd></div>
+      </dl>
+      <form method="post" action="{{ url_for('restart') }}" class="inline">
+        <button type="submit" class="secondary">重启 Shadowsocks</button>
+      </form>
+      <button type="button" class="secondary" id="btn-lan-check">探测局域网互通</button>
+      <pre id="lan-result" class="code hidden"></pre>
+    </article>
+
+    <article class="panel">
+      <h2>配置</h2>
+      <form method="post" action="{{ url_for('save') }}" class="stack">
+        <label>公网域名 / IP（导出客户端用）
+          <input name="PUBLIC_HOST" value="{{ data.PUBLIC_HOST }}" placeholder="home.example.com" />
+        </label>
+        <label>服务端口
+          <input name="SERVER_PORT" value="{{ data.SERVER_PORT }}" required />
+        </label>
+        <label>密码
+          <input name="SS_PASSWORD" value="{{ data.SS_PASSWORD }}" required />
+        </label>
+        <label>加密方式
+          <select name="SS_METHOD">
+            {% for m in methods %}
+              <option value="{{ m }}" {% if m == data.SS_METHOD %}selected{% endif %}>{{ m }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>超时（秒）
+          <input name="SS_TIMEOUT" value="{{ data.SS_TIMEOUT }}" required />
+        </label>
+        <label>WebSocket 路径
+          <input name="V2RAY_PATH" value="{{ data.V2RAY_PATH }}" required />
+        </label>
+        <label>家庭局域网 CIDR（逗号分隔）
+          <input name="LAN_CIDRS" value="{{ data.LAN_CIDRS }}" required />
+          <span class="hint">覆盖你的 10.0.0.0–10.0.254.0 时，用 <code>10.0.0.0/16</code></span>
+        </label>
+        <button type="submit">保存并重启</button>
+      </form>
+    </article>
+  </section>
+
+  {% if bundle %}
+  <section class="panel wide">
+    <h2>客户端导出 · 互联互通关键</h2>
+    <p class="muted">
+      很多客户端默认「绕过局域网 / 绕过 10.0.0.0/8」，在外面时会直连失败。
+      导出的 Clash 配置已把 <strong>{{ bundle.lan_cidrs | join(', ') }}</strong> 强制走隧道。
+    </p>
+
+    <div class="tabs">
+      <button type="button" class="tab active" data-tab="clash">Clash</button>
+      <button type="button" class="tab" data-tab="ssjson">SS JSON</button>
+      <button type="button" class="tab" data-tab="env">Docker .env</button>
+      <button type="button" class="tab" data-tab="uri">ss:// URI</button>
+      <button type="button" class="tab" data-tab="plugin">插件参数</button>
+    </div>
+
+    <div class="tab-panels">
+      <pre class="code tab-panel active" data-panel="clash">{{ bundle.clash_yaml }}</pre>
+      <pre class="code tab-panel" data-panel="ssjson">{{ bundle.ss_json | tojson(indent=2) }}</pre>
+      <pre class="code tab-panel" data-panel="env">{{ bundle.docker_env }}</pre>
+      <pre class="code tab-panel" data-panel="uri">{{ bundle.ss_uri }}</pre>
+      <pre class="code tab-panel" data-panel="plugin">plugin: v2ray-plugin
+plugin_opts: {{ bundle.plugin_opts }}</pre>
+    </div>
+  </section>
+  {% endif %}
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

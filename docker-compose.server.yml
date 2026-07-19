@@ -1,0 +1,34 @@
+# Home / NAS side
+# Prefer host network so the container can reach 10.0.0.0/16 directly.
+services:
+  ss-server:
+    image: ghcr.io/tyrantcwj/ssfuckqos-server:latest
+    build:
+      context: ./server
+    container_name: ssfuckqos-server
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVER_BIND: "0.0.0.0"
+      SERVER_PORT: "${SERVER_PORT:-80}"
+      SS_PASSWORD: "${SS_PASSWORD}"
+      SS_METHOD: "${SS_METHOD:-chacha20-ietf-poly1305}"
+      SS_TIMEOUT: "${SS_TIMEOUT:-300}"
+      V2RAY_PATH: "${V2RAY_PATH:-/nas-sync}"
+      LAN_CIDRS: "${LAN_CIDRS:-10.0.0.0/16}"
+      PUBLIC_HOST: "${PUBLIC_HOST:-}"
+      ADMIN_PORT: "${ADMIN_PORT:-8080}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-admin}"
+      TZ: Asia/Shanghai
+    network_mode: host
+    volumes:
+      - ss-server-data:/data
+    # host network: SERVER_PORT + ADMIN_PORT bind on the host directly
+    # If your NAS cannot use host network, comment network_mode and use:
+    # ports:
+    #   - "${SERVER_PORT:-80}:${SERVER_PORT:-80}/tcp"
+    #   - "${ADMIN_PORT:-8080}:${ADMIN_PORT:-8080}/tcp"
+
+volumes:
+  ss-server-data:
