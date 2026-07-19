@@ -97,7 +97,7 @@ echo "    lan    : ${LAN_CIDRS}"
 echo "    socks5 : 0.0.0.0:${LOCAL_SOCKS_PORT}"
 echo "    http   : 0.0.0.0:${LOCAL_HTTP_PORT}"
 
-ss-local -c /etc/shadowsocks/config.json -u &
+sslocal -c /etc/shadowsocks/config.json -u &
 SS_PID=$!
 
 privoxy --no-daemon /etc/privoxy/config &
@@ -112,5 +112,5 @@ while kill -0 "${SS_PID}" 2>/dev/null && kill -0 "${PRIVOXY_PID}" 2>/dev/null; d
   sleep 2
 done
 
-echo "ERROR: ss-local or privoxy exited unexpectedly" >&2
+echo "ERROR: sslocal or privoxy exited unexpectedly" >&2
 exit 1

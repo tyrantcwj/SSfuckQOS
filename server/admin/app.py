@@ -134,7 +134,7 @@ def restart_ss() -> tuple[bool, str]:
             pass
 
     proc = subprocess.Popen(
-        ["ss-server", "-c", str(CONFIG_PATH), "-u"],
+        ["ssserver", "-c", str(CONFIG_PATH), "-u"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
         start_new_session=True,
@@ -143,8 +143,8 @@ def restart_ss() -> tuple[bool, str]:
     PID_PATH.write_text(str(proc.pid), encoding="utf-8")
     time.sleep(0.3)
     if ss_pid() is None:
-        return False, "ss-server 启动失败，请检查端口/配置"
-    return True, f"ss-server 已重启 (pid={proc.pid})"
+        return False, "ssserver 启动失败，请检查端口/配置"
+    return True, f"ssserver 已重启 (pid={proc.pid})"
 
 
 def parse_lan_cidrs(raw: str) -> list[str]:

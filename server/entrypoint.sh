@@ -66,7 +66,7 @@ echo "    path     : ${V2RAY_PATH}"
 echo "    lan      : ${LAN_CIDRS}"
 echo "    admin UI : http://0.0.0.0:${ADMIN_PORT}"
 
-ss-server -c /etc/shadowsocks/config.json -u &
+ssserver -c /etc/shadowsocks/config.json -u &
 echo $! > /var/run/ss-server.pid
 
 python3 /opt/admin/app.py &
