@@ -1,0 +1,23 @@
+# 爱快专用：禁止命名卷，只用宿主机路径挂载
+services:
+  ssfuckqos-client:
+    image: ghcr.io/tyrantcwj/ssfuckqos-client:latest
+    container_name: ssfuckqos-client
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      REMOTE_SERVER: "你的DDNS或公网IP"
+      REMOTE_PORT: "80"
+      SS_PASSWORD: "与服务端相同的密码"
+      SS_METHOD: "chacha20-ietf-poly1305"
+      SS_TIMEOUT: "300"
+      V2RAY_PATH: "/nas-sync"
+      V2RAY_HOST: "你的DDNS或公网IP"
+      LAN_CIDRS: "10.0.0.0/16"
+      LOCAL_SOCKS_PORT: "1080"
+      LOCAL_HTTP_PORT: "8118"
+    ports:
+      - "1080:1080"
+      - "8118:8118"
+    volumes:
+      - /etc/ikuai/docker/ssfuckqos/client:/data

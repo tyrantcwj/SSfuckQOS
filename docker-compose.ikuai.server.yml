@@ -1,0 +1,23 @@
+# 爱快专用：禁止 network_mode:host / 禁止命名卷
+services:
+  ssfuckqos-server:
+    image: ghcr.io/tyrantcwj/ssfuckqos-server:latest
+    container_name: ssfuckqos-server
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      SERVER_BIND: "0.0.0.0"
+      SERVER_PORT: "80"
+      SS_PASSWORD: "改成你的强密码"
+      SS_METHOD: "chacha20-ietf-poly1305"
+      SS_TIMEOUT: "300"
+      V2RAY_PATH: "/nas-sync"
+      LAN_CIDRS: "10.0.0.0/16"
+      PUBLIC_HOST: "你的DDNS或公网IP"
+      ADMIN_PORT: "8080"
+      ADMIN_PASSWORD: "改成管理页密码"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /etc/ikuai/docker/ssfuckqos/server:/data
