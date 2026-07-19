@@ -1,4 +1,4 @@
-# 爱快专用：挂载必须用编排目录内相对路径
+# 爱快专用：不写 volumes
 services:
   ssfuckqos-client:
     image: ghcr.io/tyrantcwj/ssfuckqos-client:latest
@@ -19,5 +19,3 @@ services:
     ports:
       - "1080:1080"
       - "8118:8118"
-    volumes:
-      - ./data:/data

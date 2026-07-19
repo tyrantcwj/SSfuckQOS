@@ -1,7 +1,4 @@
-# 爱快专用：
-# - 禁止 network_mode:host
-# - 禁止命名卷
-# - 挂载路径必须在编排目录内（相对路径 ./）
+# 爱快专用：不写 volumes（爱快对挂载路径校验极严）
 services:
   ssfuckqos-server:
     image: ghcr.io/tyrantcwj/ssfuckqos-server:latest
@@ -22,5 +19,3 @@ services:
     ports:
       - "80:80"
       - "8080:8080"
-    volumes:
-      - ./data:/data
