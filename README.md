@@ -120,7 +120,6 @@ services:
       SS_METHOD: "chacha20-ietf-poly1305"
       SS_TIMEOUT: "300"
       V2RAY_PATH: "/nas-sync"
-      V2RAY_HOST: "你的DDNS或公网IP"
       LAN_CIDRS: "10.0.0.0/16"
       LOCAL_SOCKS_PORT: "1080"
       LOCAL_HTTP_PORT: "8118"
@@ -198,7 +197,7 @@ LAN_CIDRS=10.0.0.0/16
 | `LAN_CIDRS` | 默认 `10.0.0.0/16` |
 | `PUBLIC_HOST` | DDNS/公网 IP，用于导出客户端 |
 | `ADMIN_PASSWORD` | 管理界面密码 |
-| `REMOTE_SERVER` / `V2RAY_HOST` | 客户端连回家的地址 |
+| `REMOTE_SERVER` | 客户端连回家的地址（DDNS/公网 IP）；`Host` 头默认跟它走 |
 
 ---
 

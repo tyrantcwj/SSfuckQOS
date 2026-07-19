@@ -14,7 +14,10 @@ fi
 : "${SS_METHOD:=chacha20-ietf-poly1305}"
 : "${SS_TIMEOUT:=300}"
 : "${V2RAY_PATH:=/nas-sync}"
-: "${V2RAY_HOST:=${REMOTE_SERVER}}"
+# Empty string must fall back too (compose may pass V2RAY_HOST=)
+if [ -z "${V2RAY_HOST:-}" ]; then
+  V2RAY_HOST="${REMOTE_SERVER}"
+fi
 : "${LOCAL_SOCKS_PORT:=1080}"
 : "${LOCAL_HTTP_PORT:=8118}"
 : "${LAN_CIDRS:=10.0.0.0/16}"

@@ -15,7 +15,6 @@ services:
       SS_METHOD: "${SS_METHOD:-chacha20-ietf-poly1305}"
       SS_TIMEOUT: "${SS_TIMEOUT:-300}"
       V2RAY_PATH: "${V2RAY_PATH:-/nas-sync}"
-      V2RAY_HOST: "${V2RAY_HOST}"
       LAN_CIDRS: "${LAN_CIDRS:-10.0.0.0/16}"
       LOCAL_SOCKS_PORT: "${LOCAL_SOCKS_PORT:-1080}"
       LOCAL_HTTP_PORT: "${LOCAL_HTTP_PORT:-8118}"
