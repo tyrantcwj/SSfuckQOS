@@ -1,4 +1,4 @@
-# 爱快专用：禁止命名卷，只用宿主机路径挂载
+# 爱快专用：挂载必须用编排目录内相对路径
 services:
   ssfuckqos-client:
     image: ghcr.io/tyrantcwj/ssfuckqos-client:latest
@@ -20,4 +20,4 @@ services:
       - "1080:1080"
       - "8118:8118"
     volumes:
-      - /etc/ikuai/docker/ssfuckqos/client:/data
+      - ./data:/data
