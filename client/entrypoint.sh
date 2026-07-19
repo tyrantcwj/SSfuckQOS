@@ -35,15 +35,20 @@ cat > /etc/shadowsocks/config.json <<EOF
 {
   "server": "${REMOTE_SERVER}",
   "server_port": ${REMOTE_PORT},
-  "local_address": "0.0.0.0",
-  "local_port": ${LOCAL_SOCKS_PORT},
   "password": "${SS_PASSWORD}",
   "timeout": ${SS_TIMEOUT},
   "method": "${SS_METHOD}",
   "mode": "tcp_and_udp",
-  "fast_open": false,
   "plugin": "v2ray-plugin",
-  "plugin_opts": "${PLUGIN_OPTS}"
+  "plugin_opts": "${PLUGIN_OPTS}",
+  "locals": [
+    {
+      "protocol": "socks",
+      "local_address": "0.0.0.0",
+      "local_port": ${LOCAL_SOCKS_PORT},
+      "mode": "tcp_and_udp"
+    }
+  ]
 }
 EOF
 
@@ -100,7 +105,10 @@ echo "    lan    : ${LAN_CIDRS}"
 echo "    socks5 : 0.0.0.0:${LOCAL_SOCKS_PORT}"
 echo "    http   : 0.0.0.0:${LOCAL_HTTP_PORT}"
 
-sslocal -c /etc/shadowsocks/config.json -u &
+# shadowsocks-rust requires --local-addr; -u alone is not enough
+sslocal \
+  -c /etc/shadowsocks/config.json \
+  --local-addr "0.0.0.0:${LOCAL_SOCKS_PORT}" &
 SS_PID=$!
 
 privoxy --no-daemon /etc/privoxy/config &
