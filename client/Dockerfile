@@ -7,6 +7,7 @@ ARG TARGETARCH
 RUN apk add --no-cache \
         ca-certificates \
         curl \
+        netcat-openbsd \
         privoxy \
         tzdata \
         xz \

@@ -89,17 +89,18 @@ def save_runtime(data: dict[str, str]) -> None:
 
 
 def write_ss_config(data: dict[str, str]) -> None:
-    plugin_opts = f"server;path={data['V2RAY_PATH']}"
+    plugin_opts = f"server;mode=websocket;path={data['V2RAY_PATH']};mux=0"
     config = {
         "server": data["SERVER_BIND"],
         "server_port": int(data["SERVER_PORT"]),
         "password": data["SS_PASSWORD"],
         "timeout": int(data["SS_TIMEOUT"]),
         "method": data["SS_METHOD"],
-        "mode": "tcp_and_udp",
+        "mode": "tcp_only",
         "fast_open": False,
         "plugin": "v2ray-plugin",
         "plugin_opts": plugin_opts,
+        "plugin_mode": "tcp_only",
     }
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
     CONFIG_PATH.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
@@ -133,10 +134,13 @@ def restart_ss() -> tuple[bool, str]:
         except OSError:
             pass
 
+    log_path = Path("/var/log/ssserver.log")
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    log_f = open(log_path, "a", encoding="utf-8")
     proc = subprocess.Popen(
-        ["ssserver", "-c", str(CONFIG_PATH), "-u"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        ["ssserver", "-c", str(CONFIG_PATH), "-v"],
+        stdout=log_f,
+        stderr=log_f,
         start_new_session=True,
     )
     PID_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -186,13 +190,13 @@ def build_client_bundle(data: dict[str, str]) -> dict[str, Any]:
         "password": password,
         "method": method,
         "plugin": "v2ray-plugin",
-        "plugin_opts": f"path={path};host={host}",
+        "plugin_opts": f"mode=websocket;path={path};host={host};mux=0",
         "remarks": "SSfuckQOS-Home",
     }
 
     # ss://method:password@host:port/?plugin=...
     userinfo = base64.urlsafe_b64encode(f"{method}:{password}".encode()).decode().rstrip("=")
-    plugin = quote(f"v2ray-plugin;path={path};host={host}")
+    plugin = quote(f"v2ray-plugin;mode=websocket;path={path};host={host};mux=0")
     ss_uri = f"ss://{userinfo}@{host}:{port}/?plugin={plugin}#SSfuckQOS"
 
     clash_rules = "\n".join([f"  - IP-CIDR,{cidr},HOME-LAN,no-resolve" for cidr in lan])
@@ -218,7 +222,7 @@ proxies:
       host: {host}
       path: {path}
       tls: false
-      mux: true
+      mux: false
 
 proxy-groups:
   - name: HOME-LAN
@@ -253,7 +257,7 @@ LOCAL_HTTP_PORT=8118
         "clash_yaml": clash,
         "docker_env": docker_env,
         "lan_cidrs": lan,
-        "plugin_opts": f"path={path};host={host}",
+        "plugin_opts": f"mode=websocket;path={path};host={host};mux=0",
     }
 
 
