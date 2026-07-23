@@ -1,4 +1,6 @@
-# 爱快专用：不写 volumes；端口三处一致（SERVER_PORT / ports / 客户端 REMOTE_PORT）
+# 爱快专用：不写 volumes
+# 本地 5280 -> 容器 80（通道）；本地 5281 -> 容器 8080（管理页）
+# 客户端 REMOTE_PORT 填 5280（不是 80）
 services:
   ssfuckqos-server:
     image: ghcr.io/tyrantcwj/ssfuckqos-server:latest
@@ -7,7 +9,7 @@ services:
     environment:
       TZ: Asia/Shanghai
       SERVER_BIND: "0.0.0.0"
-      SERVER_PORT: "5080"
+      SERVER_PORT: "80"
       SS_PASSWORD: "改成你的强密码"
       SS_METHOD: "chacha20-ietf-poly1305"
       SS_TIMEOUT: "300"
@@ -17,5 +19,5 @@ services:
       ADMIN_PORT: "8080"
       ADMIN_PASSWORD: "改成管理页密码"
     ports:
-      - "5080:5080"
-      - "8080:8080"
+      - "5280:80"
+      - "5281:8080"

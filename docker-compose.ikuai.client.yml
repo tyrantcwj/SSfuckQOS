@@ -1,4 +1,5 @@
-# 爱快专用：不写 volumes；REMOTE_PORT 必须等于服务端对外端口
+# 爱快专用：不写 volumes
+# REMOTE_PORT = 服务端「本地端口」5280（映射到容器 80）
 services:
   ssfuckqos-client:
     image: ghcr.io/tyrantcwj/ssfuckqos-client:latest
@@ -7,7 +8,7 @@ services:
     environment:
       TZ: Asia/Shanghai
       REMOTE_SERVER: "家里公网IP或DDNS"
-      REMOTE_PORT: "5080"
+      REMOTE_PORT: "5280"
       SS_PASSWORD: "与服务端相同的密码"
       SS_METHOD: "chacha20-ietf-poly1305"
       SS_TIMEOUT: "300"
