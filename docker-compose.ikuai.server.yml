@@ -16,6 +16,8 @@ services:
       V2RAY_PATH: "/nas-sync"
       LAN_CIDRS: "10.0.0.0/16"
       PUBLIC_HOST: "你的公网IP或DDNS"
+      # 导出给客户端的端口（爱快本地端口）；容器内仍听 80
+      PUBLIC_PORT: "5280"
       ADMIN_PORT: "8080"
       ADMIN_PASSWORD: "改成管理页密码"
     ports:

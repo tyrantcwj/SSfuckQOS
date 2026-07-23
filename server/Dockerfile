@@ -8,6 +8,7 @@ RUN apk add --no-cache \
         ca-certificates \
         curl \
         iputils \
+        procps \
         py3-flask \
         python3 \
         tzdata \

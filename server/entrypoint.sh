@@ -29,9 +29,10 @@ export V2RAY_PATH LAN_CIDRS ADMIN_PORT ADMIN_BIND ADMIN_PASSWORD PUBLIC_HOST
 export SS_CONFIG_PATH=/etc/shadowsocks/config.json
 export RUNTIME_ENV_PATH=/data/runtime.env
 export SS_PID_PATH=/var/run/ss-server.pid
+export SS_LOG_PATH=/var/log/ssserver.log
 
-if [ ! -f /data/runtime.env ]; then
-  cat > /data/runtime.env <<EOF
+# 每次启动都以编排 environment 为准（爱快无 volume 时也能对齐）
+cat > /data/runtime.env <<EOF
 SERVER_BIND=${SERVER_BIND}
 SERVER_PORT=${SERVER_PORT}
 SS_PASSWORD=${SS_PASSWORD}
@@ -42,50 +43,13 @@ PUBLIC_HOST=${PUBLIC_HOST}
 LAN_CIDRS=${LAN_CIDRS}
 ADMIN_PORT=${ADMIN_PORT}
 EOF
-fi
-
-# v2ray-plugin websocket 只支持 TCP
-PLUGIN_OPTS="server;mode=websocket;path=${V2RAY_PATH};mux=0"
-cat > /etc/shadowsocks/config.json <<EOF
-{
-  "server": "${SERVER_BIND}",
-  "server_port": ${SERVER_PORT},
-  "password": "${SS_PASSWORD}",
-  "timeout": ${SS_TIMEOUT},
-  "method": "${SS_METHOD}",
-  "mode": "tcp_only",
-  "fast_open": false,
-  "plugin": "v2ray-plugin",
-  "plugin_opts": "${PLUGIN_OPTS}",
-  "plugin_mode": "tcp_only"
-}
-EOF
 
 echo "==> SSfuckQOS server"
-echo "    ss       : ${SERVER_BIND}:${SERVER_PORT}"
+echo "    listen   : ${SERVER_BIND}:${SERVER_PORT}  (容器内；爱快映射 5280:80 时这里仍是 80)"
 echo "    path     : ${V2RAY_PATH}"
 echo "    lan      : ${LAN_CIDRS}"
-echo "    plugin   : ${PLUGIN_OPTS}"
-echo "    admin UI : http://0.0.0.0:${ADMIN_PORT}"
+echo "    admin UI : http://0.0.0.0:${ADMIN_PORT}  (爱快映射 5281:8080)"
+echo "    note     : ssserver 由管理面板进程拉起"
 
-ssserver -c /etc/shadowsocks/config.json -v > /var/log/ssserver.log 2>&1 &
-echo $! > /var/run/ss-server.pid
-tail -F /var/log/ssserver.log &
-TAIL_PID=$!
-
-sleep 1
-if ! kill -0 "$(cat /var/run/ss-server.pid)" 2>/dev/null; then
-  echo "ERROR: ssserver failed to start. Last log:" >&2
-  cat /var/log/ssserver.log >&2 || true
-  exit 1
-fi
-
-python3 /opt/admin/app.py &
-ADMIN_PID=$!
-
-cleanup() {
-  kill "$(cat /var/run/ss-server.pid 2>/dev/null || true)" "${ADMIN_PID}" "${TAIL_PID}" 2>/dev/null || true
-}
-trap cleanup INT TERM
-
-wait "${ADMIN_PID}"
+# 只启动管理面板；ssserver 由 admin 负责拉起/守护
+exec python3 /opt/admin/app.py

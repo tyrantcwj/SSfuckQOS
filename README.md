@@ -74,12 +74,16 @@ services:
       V2RAY_PATH: "/nas-sync"
       LAN_CIDRS: "10.0.0.0/16"
       PUBLIC_HOST: "你的公网IP或DDNS"
+      PUBLIC_PORT: "5280"
       ADMIN_PORT: "8080"
       ADMIN_PASSWORD: "改成管理页密码"
     ports:
       - "5280:80"
       - "5281:8080"
 ```
+
+若管理页右上角显示「已停止」：点「启动 / 重启 Shadowsocks」，并看页面上的 **ssserver 日志**。  
+服务端口必须是容器内的 `80`，不要改成 `5280`。
 
 ### 客户端（外面爱快 / 另一台 Docker 机）
 

@@ -39,11 +39,14 @@
         <div><dt>家庭网段</dt><dd class="mono">{{ data.LAN_CIDRS }}</dd></div>
         <div><dt>管理面板运行</dt><dd>{{ uptime }}s</dd></div>
       </dl>
+      <p class="hint">容器内监听应是 <code>0.0.0.0:80</code>。爱快映射 <code>5280→80</code> / <code>5281→8080</code> 时，不要把服务端口改成 5280。</p>
       <form method="post" action="{{ url_for('restart') }}" class="inline">
-        <button type="submit" class="secondary">重启 Shadowsocks</button>
+        <button type="submit" class="secondary">启动 / 重启 Shadowsocks</button>
       </form>
       <button type="button" class="secondary" id="btn-lan-check">探测局域网互通</button>
       <pre id="lan-result" class="code hidden"></pre>
+      <h3 style="margin:18px 0 8px;font-size:14px;">ssserver 日志</h3>
+      <pre class="code">{{ log_tail }}</pre>
     </article>
 
     <article class="panel">
